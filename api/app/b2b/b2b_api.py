@@ -5,7 +5,7 @@ from .b2b_schema import BusinessSignInSchema, BusinessSignUpSchema
 from .b2b_orm import BusinessORM
 
 from ..database import PromoORM
-from ..default_schema import RawPromoCreateSchema, PromoCreateSchema
+from ..default_schema import PromoCreateSchema
 
 from ..app import security
 
@@ -41,12 +41,12 @@ async def sign_in(signInData: BusinessSignInSchema):
         401, {"status": "error", "message": "Неверный email или пароль."})
 
 
-@router.post("/promo", dependencies=[Depends(security.access_token_required)])
-async def create_promo(rawPromoCreateData: RawPromoCreateSchema, business_id: str | None = Depends(security.get_current_subject)):
-    promo_id = await PromoORM.create_promo(PromoCreateSchema.create_from_raw(rawPromoCreateData), int(business_id))
+@router.post("/promo", dependencies=[Depends(security.access_token_required)], status_code=201)
+async def create_promo(promoCreateData: PromoCreateSchema, business_id: str = Depends(security.get_current_subject)):
+    promo_id = await PromoORM.create_promo(promoCreateData, int(business_id))
     return {"id": promo_id}
 
 
 @router.get("/promo")
-async def get_promo(business_id: str | None = Depends(security.get_current_subject)):
+async def get_promo(business_id: str = Depends(security.get_current_subject)):
     return {"id": business_id}

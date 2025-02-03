@@ -20,7 +20,8 @@ app = FastAPI(title="Promo Code API", lifespan=lifespan)
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     print(exc)
-    raise HTTPException(400, {"status": "error"})
+    raise HTTPException(
+        400, {"status": "error", "message": "RequestValidationError"})
 
 authXConfig = AuthXConfig()
 authXConfig.JWT_SECRET_KEY = os.getenv("RANDOM_SECRET", "12345")
